@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Music-Play-Tracker",
+  "version": "1.0",
+  "description": "Keeps track of the music played and skipped on the browser.",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+        "matches": [
+            "https://music.youtube.com/*"
+        ],
+        "js": [
+            "content.js"
+        ]
+    }
+  ]
+}
