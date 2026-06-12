@@ -6,9 +6,11 @@ let highestProgressPercent = 0;
 const MIN_THRESHOLD = 0.5;
 
 function getCurrentSong() {
+    // get elements that contain music title, artist, and album
     const titleElement = document.querySelector("ytmusic-player-bar .title");
     const bylineElement = document.querySelector("ytmusic-player-bar .byline");
 
+    // get song title and byline as strings
     const title = titleElement?.textContent?.trim() || null;
     const byline = bylineElement?.textContent?.trim() || null;
 
@@ -16,9 +18,11 @@ function getCurrentSong() {
         return null;
     }
 
+    // get elements that contain current progress of the song
     const timeInfoElement = document.querySelector("ytmusic-player-bar .time-info");
     const timeParts = timeInfoElement?.textContent?.trim().split("/") || null;
 
+    // get duration of song and play time in seconds
     let secondsPlayed = 0;
     let totalSeconds = 0;
     let percentPlayed = 0;
@@ -35,7 +39,7 @@ function getCurrentSong() {
 
     return {
         title: title,
-        byline: byline,
+        byline: byline, 
         secondsPlayed: secondsPlayed,
         totalSeconds: totalSeconds,
         percentPlayed: percentPlayed
@@ -43,6 +47,7 @@ function getCurrentSong() {
 
 }
 
+// Compare if two songs are the same 
 function songsAreSame(A, B) { 
     if(!A || !B){
         return false;
@@ -58,6 +63,7 @@ function checkSongChange(){
         return;
     }
 
+    // If this is the first song detected 
     if(!lastSong){
         console.log("Song has started: ", currentSong);
         lastSong = currentSong;
@@ -65,6 +71,7 @@ function checkSongChange(){
         return;
     }
 
+    // If the song has not changed update the play progress
     if(songsAreSame(currentSong, lastSong)){
         if(currentSong.percentPlayed > highestProgressPercent){
             highestProgressPercent = currentSong.percentPlayed;
@@ -74,7 +81,17 @@ function checkSongChange(){
         return;
     }
 
+    //If song has changed, create event 
     const result = highestProgressPercent >= MIN_THRESHOLD ? "PLAYED" : "SKIPPED";
+    lastSong.result = result;
+    delete lastSong.totalSeconds;
+    delete lastSong.secondsPlayed;
+    lastSong.percentPlayed = highestProgressPercent;
+
+    chrome.runtime.sendMessage({
+        type: "SAVE_SONG_EVENT",
+        songEvent: lastSong
+    });
 
     console.log("Song has changed!");
     console.log("Last song played:", lastSong.title);
@@ -83,8 +100,9 @@ function checkSongChange(){
 
     console.log("New song playing:", currentSong);
 
+    //Update to new song
     lastSong = currentSong;
-    highestProgressPercent = currenSong.percentPlayed;
+    highestProgressPercent = currentSong.percentPlayed;
 }
 
 function parseTimeToSeconds(timeText){
@@ -103,4 +121,5 @@ function parseTimeToSeconds(timeText){
     }
 }
 
-setInterval(checkSongChange, 3000);
+//checks if song changes every second
+setInterval(checkSongChange, 1000);
