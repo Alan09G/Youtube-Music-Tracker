@@ -1,14 +1,9 @@
 const express = require('express');
 const app = express();
 const port = 3000;  
-const mysql = require('mysql');
+const { connectToDatabase } = require('./db_connection');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'your_username',
-    password: 'your_password',
-    database: 'your_database'
-});
+const connection = connectToDatabase();
 
 app.use(express.static('Extension'));
 
