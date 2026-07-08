@@ -4,7 +4,7 @@ export function connectToDatabase() {
     const connection = mysql.createConnection({
         host: 'crossover.proxy.rlwy.net',
         user: 'root',
-        password: 'process.env.DB_PASS',
+        password: process.env.DB_PASS,
         database: 'song_tracking',
         port: 19137
     });
@@ -16,5 +16,6 @@ export function connectToDatabase() {
         }
         console.log('Connected to MySQL database');
     });
+    
     return connection;
 }
