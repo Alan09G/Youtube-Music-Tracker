@@ -1,4 +1,4 @@
-async function addSong(song, album, artists){
+async function addSong(song, album, artists, connection){
     let sqlAddSong = `INSERT IGNORE INTO song (song_name, album) VALUES (?, ?)`;
     
     // Add the song to the database
@@ -47,7 +47,15 @@ async function addSong(song, album, artists){
 }
 
 //byline has artists and album info
-export const parseByline = (byline) => {
+const parseByline = (byline) => {
+    if(!byline){
+        console.log("Byline is null or undefined. Returning empty album and artists.");
+        return {
+            album: null,
+            artists: []
+        };
+    }
+
     const bylineParts = byline.trim().split("•").map(part => part.trim());
 
     let artists = [];
@@ -72,11 +80,14 @@ export const parseByline = (byline) => {
 };
 
 // Function to get song ID from the database. Creates the song if it doesn't exist.
-export const getSongId = async (song, album, artists) => {
+async function getSongId(song, album, artists, connection) {
+    if(!song){
+        throw new Error("Song title is required to get song ID.");
+    }
 
     console.log("Getting song ID for:", song, "Album:", album, "Artists:", artists);
 
-    let sql = `SELECT song_id FROM song WHERE song_name = ? AND album = ?`;
+    let sql = `SELECT song_id FROM song WHERE song_name = ? AND album <=> ?`;
 
     // Check if the song already exists in the database
     const results = await new Promise((resolve, reject) => {
@@ -93,7 +104,9 @@ export const getSongId = async (song, album, artists) => {
     if (results.length > 0) {
         return results[0].song_id;
     }else { 
-        await addSong(song, album, artists);
-        return await getSongId(song, album, artists); // Recursively call to get the newly added song's ID
+        await addSong(song, album, artists, connection);
+        return await getSongId(song, album, artists, connection); // Recursively call to get the newly added song's ID
     }
 };
+
+module.exports = { parseByline, getSongId};

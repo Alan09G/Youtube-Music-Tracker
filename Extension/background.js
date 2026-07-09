@@ -13,18 +13,19 @@ chrome.runtime.onMessage.addListener((message) => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(message.data)
+                    body: JSON.stringify(message.songEvent)
                     });
+
+                if(response.ok){
+                    const result = await response.json();
+                    console.log("Response: ", result);
+                }else{
+                    console.error("Error sending song event to server:", response.statusText);
+                }
             }catch(error){
                 console.error("Error sending song event to server:", error);
             }
-        
-            if(response.ok){
-                const result = await response.json();
-                console.log("Response: ", result);
-            }else{
-                console.error("Error sending song event to server:", response.statusText);
-            }
+    
         })();        
     }
 });

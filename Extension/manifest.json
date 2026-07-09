@@ -4,6 +4,9 @@
   "version": "1.0",
   "description": "Keeps track of the music played and skipped on the browser.",
   "permissions": ["storage"],
+  "host_permissions": [
+    "https://localhost:3000/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },

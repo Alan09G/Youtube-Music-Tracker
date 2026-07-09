@@ -15,8 +15,12 @@ app.use(cors({
 
 // Endpoint to receive song events from the extension
 app.post('/api/song_event', async (req, res) => {
-    const song = req.body.song; 
-    const eventType = req.body.eventType;
+    console.log("Request Body: ", req.body);
+    console.log("Song title: ", req.body.title);
+
+    const song = req.body.title; 
+    console.log("Song Title: ", song);
+    const eventType = req.body.result;
     const percentPlayed = req.body.percentPlayed;
     const byline = req.body.byline;
     const date = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format date for MySQL
@@ -25,7 +29,7 @@ app.post('/api/song_event', async (req, res) => {
     const artists = parseByline(byline)["artists"];
     
     try { 
-        const song_id = await getSongId(song, album, artists);
+        const song_id = await getSongId(song, album, artists, connection);
 
         console.log(`Received song event: 
             Song: ${song}, 
