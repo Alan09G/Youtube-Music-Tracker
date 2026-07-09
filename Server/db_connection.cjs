@@ -1,6 +1,6 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
-export function connectToDatabase() {
+function connectToDatabase() {
     const connection = mysql.createConnection({
         host: 'crossover.proxy.rlwy.net',
         user: 'root',
@@ -19,3 +19,5 @@ export function connectToDatabase() {
     
     return connection;
 }
+
+module.exports = { connectToDatabase };

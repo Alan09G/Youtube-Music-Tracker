@@ -1,13 +1,17 @@
 const express = require('express');
 const app = express();
-const port = 3000;  
-const { connectToDatabase } = require('./db_connection');
+const cors = require('cors');
+const port = 3000;
+const { connectToDatabase } = require('./db_connection.cjs');
 const { parseByline, getSongId } = require('./helper_functions');
 
 const connection = connectToDatabase();
 
 app.use(express.static('Extension'));
 app.use(express.json());
+app.use(cors({
+    origin: "chrome-extension://jmcbekfjjpffbmhlpobhjibdjklpefbk"
+}));
 
 // Endpoint to receive song events from the extension
 app.post('/api/song_event', async (req, res) => {

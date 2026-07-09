@@ -7,13 +7,18 @@ chrome.runtime.onMessage.addListener((message) => {
     if(message.type === "SAVE_SONG_EVENT"){
         //Get stored song events and append the new event
         (async () => { 
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(message.data)
-            });
+            try{
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(message.data)
+                    });
+            }catch(error){
+                console.error("Error sending song event to server:", error);
+            }
+        
             if(response.ok){
                 const result = await response.json();
                 console.log("Response: ", result);

@@ -1,4 +1,4 @@
-addSong = async (song, album, artists) => {
+async function addSong(song, album, artists){
     let sqlAddSong = `INSERT IGNORE INTO song (song_name, album) VALUES (?, ?)`;
     
     // Add the song to the database
