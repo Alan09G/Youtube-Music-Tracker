@@ -60,7 +60,7 @@ export const parseByline = (byline) => {
     if(bylineParts[1]){
         // Regex to match view counts like "1.2K views", "3M views", etc.
         // music videos have view counts instead of album names.
-        let regex = /^\d+(\.\d+)?[KMB]*\s+views$/i; 
+        let regex = /^\d+([\.,]\d+)?[KMB]*\s+views$/i; 
         if(!regex.test(bylineParts[1])){
             album = bylineParts[1];
         }

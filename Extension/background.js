@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:3000/api/song_event";
+
 chrome.runtime.onMessage.addListener((message) => { 
 
     console.log("Message Recieved: ", message);
@@ -5,12 +7,19 @@ chrome.runtime.onMessage.addListener((message) => {
     if(message.type === "SAVE_SONG_EVENT"){
         //Get stored song events and append the new event
         (async () => { 
-            const result = await chrome.storage.local.get("songEvents");
-            const newSongEvent = message.songEvent;
-            const events = result.songEvents || [];
-            events.push(newSongEvent);
-            console.log("Stored events: ", events);
-            await chrome.storage.local.set({songEvents: events});
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(message.data)
+            });
+            if(response.ok){
+                const result = await response.json();
+                console.log("Response: ", result);
+            }else{
+                console.error("Error sending song event to server:", response.statusText);
+            }
         })();        
     }
 });
