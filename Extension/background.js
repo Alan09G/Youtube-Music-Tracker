@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/song_event";
+const API_URL = "https://youtube-music-tracker-dz8v.onrender.com/api/song_event";
 
 chrome.runtime.onMessage.addListener((message) => { 
 

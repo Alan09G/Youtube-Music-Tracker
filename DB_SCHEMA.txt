@@ -1,8 +1,7 @@
 CREATE TABLE song ( 
 	song_id INT AUTO_INCREMENT PRIMARY KEY,
-	song_name VARCHAR(100) NOT NULL,
-	album VARCHAR(100) DEFAULT NULL,
-	UNIQUE 'song_name' (song_name, album)
+	song_name VARCHAR(60) NOT NULL,
+	album VARCHAR(60)
 );
 
 CREATE TABLE artist (
@@ -12,7 +11,7 @@ CREATE TABLE artist (
 
 CREATE TABLE song_artist ( 
 	song_id INT,
-	artist_id VARCHAR(60) NOT NULL,
+	artist_id INT NOT NULL,
 	PRIMARY KEY (song_id, artist_id),
 	FOREIGN KEY (song_id) REFERENCES song(song_id),
 	FOREIGN KEY (artist_id) REFERENCES artist(artist_id)

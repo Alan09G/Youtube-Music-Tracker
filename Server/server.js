@@ -16,10 +16,8 @@ app.use(cors({
 // Endpoint to receive song events from the extension
 app.post('/api/song_event', async (req, res) => {
     console.log("Request Body: ", req.body);
-    console.log("Song title: ", req.body.title);
 
     const song = req.body.title; 
-    console.log("Song Title: ", song);
     const eventType = req.body.result;
     const percentPlayed = req.body.percentPlayed;
     const byline = req.body.byline;
