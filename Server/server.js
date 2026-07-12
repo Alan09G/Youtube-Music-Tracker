@@ -59,7 +59,9 @@ app.post('/api/song_event', async (req, res) => {
     }
 
 
-    res.send('Song event received');
+    res.send({
+        message: 'Song event received'
+    });
 });
 
 app.listen(port, () => {
