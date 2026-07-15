@@ -5,7 +5,8 @@
   "description": "Keeps track of the music played and skipped on the browser.",
   "permissions": ["storage"],
   "host_permissions": [
-    "https://localhost:3000/*"
+    "https://localhost:3000/*",
+    "https://youtube-music-tracker-dz8v.onrender.com/*"
   ],
   "background": {
     "service_worker": "background.js"

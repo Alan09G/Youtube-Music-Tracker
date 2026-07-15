@@ -10,7 +10,10 @@ const connection = connectToDatabase();
 app.use(express.static('Extension'));
 app.use(express.json());
 app.use(cors({
-    origin: "chrome-extension://jmcbekfjjpffbmhlpobhjibdjklpefbk"
+    origin: [
+        "chrome-extension://jmcbekfjjpffbmhlpobhjibdjklpefbk",
+        "chrome-extension://phfcophdhpclenkemcjafbagebadgbee"
+    ]
 }));
 
 // Endpoint to receive song events from the extension
