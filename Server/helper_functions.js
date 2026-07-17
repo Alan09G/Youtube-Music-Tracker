@@ -2,7 +2,7 @@ async function addSong(song, album, artists, connection){
     let sqlAddSong = `INSERT IGNORE INTO song (song_name, album) VALUES (?, ?)`;
     
     // Add the song to the database
-    await new Promise((resolve, reject) => {
+    const addSongResult = await new Promise((resolve, reject) => {
         connection.query(sqlAddSong, [song, album], (err, results) => {
             if (err) {
                 console.error('Error occurred while adding song:', err);
@@ -44,6 +44,8 @@ async function addSong(song, album, artists, connection){
             });
         });
     }
+
+    return addSongResult.insertId; // Return the song_id of the newly added song
 }
 
 //byline has artists and album info
@@ -87,11 +89,24 @@ async function getSongId(song, album, artists, connection) {
 
     console.log("Getting song ID for:", song, "Album:", album, "Artists:", artists);
 
-    let sql = `SELECT song_id FROM song WHERE song_name = ? AND album <=> ?`;
+    let sql = `
+        SELECT s.song_id, s.album,
+        GROUP_CONCAT(DISTINCT artist_name ORDER BY a.artist_name SEPARATOR ',') AS artists
+        FROM song_artist AS sa
+        JOIN song AS s
+        ON sa.song_id = s.song_id 
+        JOIN artist AS a
+        ON sa.artist_id = a.artist_id
+        WHERE s.song_name = ?
+        GROUP BY s.song_id, s.album
+        HAVING artists = ?;`
+    ;
+
+    const artistsString = [...artists].artists.sort().join(','); //[...artists] creates a copy of the array
 
     // Check if the song already exists in the database
     const results = await new Promise((resolve, reject) => {
-        connection.query(sql, [song, album], (err, results) => {
+        connection.query(sql, [song, artistsString], (err, results) => {
             if (err) {
                 console.error('Error occurred while fetching song ID:', err);
                 reject(err);
@@ -102,10 +117,26 @@ async function getSongId(song, album, artists, connection) {
     });
 
     if (results.length > 0) {
+        /*Because mobile apps do not include album information, 
+        the album needs to be updated if it's later retrieved when the song
+        is played on desktop*/
+        if(results[0].album === null && album !== null){
+            let updateAlbumSql = `UPDATE song SET album = ? WHERE song_id = ?`;
+            await new Promise((resolve, reject) => {
+                connection.query(updateAlbumSql, [album, results[0].song_id], (err, updateResults) => {
+                    if (err) {
+                        console.error('Error occurred while updating album:', err);
+                        reject(err);
+                    } else {
+                        resolve(updateResults);
+                    }
+                });
+            });
+        }
+
         return results[0].song_id;
     }else { 
-        await addSong(song, album, artists, connection);
-        return await getSongId(song, album, artists, connection); // Recursively call to get the newly added song's ID
+        return await addSong(song, album, artists, connection); // return the song_id of the newly added song
     }
 };
 
