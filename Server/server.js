@@ -16,6 +16,21 @@ app.use(cors({
     ]
 }));
 
+async function runQuery(sql, cutoff){
+    await new Promise((resolve, reject) => {
+    connection.query(sql, [cutoff], (err, results) => {
+        if (err){
+            console.log("An error occured when getting the top tracks:", err);
+            reject(err);
+        }
+        else{
+            resolve(results);
+        }
+    })
+})
+}
+
+
 // Endpoint to receive song events from the extension
 app.post('/api/song_event', async (req, res) => {
     console.log("Request Body: ", req.body);
@@ -103,7 +118,7 @@ app.get('/get-music-data', async(req, res) => {
         }
 
         
-        let sql = `
+        let sqlTracks = `
             SELECT
                 s.song_name,
                 s.album_name,
@@ -126,21 +141,46 @@ app.get('/get-music-data', async(req, res) => {
             ORDER BY num_times_played DESC
         ;`;
 
-        const topTracks = await new Promise((resolve, reject) => {
-            connection.query(sql, [cutoff], (err, results) => {
-                if (err){
-                    console.log("An error occured when getting the top tracks:", err);
-                    reject(err);
-                }
-                else{
-                    resolve(results);
-                }
-            })
-        })
+        let sqlAlbums = `
+            SELECT
+                s.album_name,
+                COUNT(DISTINCT CASE
+                    WHEN se.event_type = 'PLAYED' THEN se.id
+                END) AS num_times_played
+            FROM song AS s 
+            JOIN song_event AS se
+                ON se.song_id = s.song_id
+            WHERE ? < se.created_at AND s.album_name IS NOT NULL
+            GROUP BY s.album_name
+            ORDER BY num_times_played DESC
+        ;`;
+
+        let sqlArtists = `
+            SELECT 
+                a.artist_name,
+                COUNT(DISTINCT CASE
+                    WHEN se.event_type = 'PLAYED' THEN se.id
+                END) AS num_times_played
+                FROM artist AS a
+                JOIN song_artist AS sa
+                    ON sa.artist_id = a.artist_id
+                JOIN song_event AS se
+                    ON se.song_id = sa.song_id
+                WHERE ? < se.created_at
+                GROUP BY a.artist_name
+                ORDER BY num_times_played DESC
+        `
+
+        const topTracks = runQuery(sqlTracks, cutoff)
+        const topAlbums = runQuery(sqlAlbums, cutoff)
+        const topArtists = runQuery(sqlArtists, cutoff)
 
         res.send({
-            topTracks
+            topTracks,
+            topAlbums,
+            topArtists
         })
+
     }catch (error){
         console.error("Error retrieving music data:", error);
 
