@@ -18,16 +18,16 @@ app.use(cors({
 }));
 
 async function runQuery(sql, cutoff){
-    await new Promise((resolve, reject) => {
-    connection.query(sql, [cutoff], (err, results) => {
-        if (err){
-            console.log("An error occured when getting the top tracks:", err);
-            reject(err);
-        }
-        else{
-            resolve(results);
-        }
-    })
+    return await new Promise((resolve, reject) => {
+        connection.query(sql, [cutoff], (err, results) => {
+            if (err){
+                console.log("An error occured when getting the top tracks:", err);
+                reject(err);
+            }
+            else{
+                resolve(results);
+            }
+        })
 })
 }
 
