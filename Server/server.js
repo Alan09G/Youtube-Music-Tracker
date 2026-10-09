@@ -11,6 +11,7 @@ app.use(express.static('Extension'));
 app.use(express.json());
 app.use(cors({
     origin: [
+        "http://localhost:5174",
         "chrome-extension://jmcbekfjjpffbmhlpobhjibdjklpefbk",
         "chrome-extension://phfcophdhpclenkemcjafbagebadgbee"
     ]
