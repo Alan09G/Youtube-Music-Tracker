@@ -122,7 +122,7 @@ app.get('/get-music-data', async(req, res) => {
         let sqlTracks = `
             SELECT
                 s.song_name,
-                s.album_name,
+                s.album,
                 GROUP_CONCAT(DISTINCT a.artist_name ORDER BY a.artist_name SEPARATOR ', ') AS artists,
                 COUNT(DISTINCT CASE
                     WHEN se.event_type = 'PLAYED' THEN se.id
@@ -144,7 +144,7 @@ app.get('/get-music-data', async(req, res) => {
 
         let sqlAlbums = `
             SELECT
-                s.album_name,
+                s.album,
                 COUNT(DISTINCT CASE
                     WHEN se.event_type = 'PLAYED' THEN se.id
                 END) AS num_times_played
