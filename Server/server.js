@@ -67,6 +67,55 @@ app.post('/api/song_event', async (req, res) => {
     });
 });
 
+//Endpoint to retrieve music data from database
+app.get('/get-music-data', async(req, res) => {
+     const timeFrame = req.body.timeFrame;
+     const cutoff = {/* Generate current date in sql format */} - timeFrame;
+     const topTracks = [];
+
+    {/* is the sql command correct? How to divide in SQL? */}
+     let sql = `
+        SELECT
+            s.song_name,
+            s.album_name,
+            GROUP_CONCAT(DISTINCT a.artist_name ORDER BY a.artist_name SEPARATOR ', ') AS artists,
+            COUNT(DISTINCT CASE
+                WHEN se.event_type = 'PLAYED' THEN se.id
+            END) AS num_times_played,
+            COUNT(DISTINCT CASE
+                WHEN se.event_type = 'SKIPPED' THEN se.id
+            END) AS num_times_skipped
+        FROM song AS s
+        LEFT JOIN song_event AS se
+            ON se.song_id = s.song_id
+        LEFT JOIN song_artist AS sa
+            ON sa.song_id = s.song_id
+        LEFT JOIN artist AS a
+            ON a.artist_id = sa.artist_id
+        WHERE ? < se.created_at
+        GROUP BY s.song_id, s.song_name
+        ORDER BY num_times_played DESC
+    ;`;
+
+    await new Promise((resolve, reject) => {
+        connection.query(sql, [], (err, res) => {
+            if (err){
+                console.log("An error occured when getting the top tracks:", err);
+                reject(err);
+            }
+            else{
+                
+                topTracks = {/* How does the database return the results?  */};
+                resolve(res);
+            }
+        })
+    })
+
+    res.send({
+        topTracks
+    })
+})
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
