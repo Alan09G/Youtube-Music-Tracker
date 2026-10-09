@@ -151,8 +151,8 @@ app.get('/get-music-data', async(req, res) => {
             FROM song AS s 
             JOIN song_event AS se
                 ON se.song_id = s.song_id
-            WHERE ? < se.created_at AND s.album_name IS NOT NULL
-            GROUP BY s.album_name
+            WHERE ? < se.created_at AND s.album IS NOT NULL
+            GROUP BY s.album
             ORDER BY num_times_played DESC
         ;`;
 
