@@ -172,9 +172,9 @@ app.get('/get-music-data', async(req, res) => {
                 ORDER BY num_times_played DESC
         `
 
-        const topTracks = runQuery(sqlTracks, cutoff)
-        const topAlbums = runQuery(sqlAlbums, cutoff)
-        const topArtists = runQuery(sqlArtists, cutoff)
+        const topTracks = await runQuery(sqlTracks, cutoff)
+        const topAlbums = await runQuery(sqlAlbums, cutoff)
+        const topArtists = await runQuery(sqlArtists, cutoff)
 
         res.send({
             topTracks,
