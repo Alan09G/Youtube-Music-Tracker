@@ -91,7 +91,7 @@ async function getSongId(song, album, artists, connection) {
 
     let sql = `
         SELECT s.song_id, s.album,
-        GROUP_CONCAT(DISTINCT artist_name ORDER BY a.artist_name SEPARATOR ',') AS artists
+        GROUP_CONCAT(DISTINCT a.artist_name ORDER BY a.artist_name SEPARATOR ',') AS artists
         FROM song_artist AS sa
         JOIN song AS s
         ON sa.song_id = s.song_id 
@@ -102,7 +102,7 @@ async function getSongId(song, album, artists, connection) {
         HAVING artists = ?;`
     ;
 
-    const artistsString = [...artists].artists.sort().join(','); //[...artists] creates a copy of the array
+    const artistsString = [...artists].sort().join(','); //[...artists] creates a copy of the array
 
     // Check if the song already exists in the database
     const results = await new Promise((resolve, reject) => {

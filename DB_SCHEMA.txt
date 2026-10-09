@@ -26,4 +26,8 @@ CREATE TABLE song_event (
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY(song_id) REFERENCES song(song_id)
 );
+
+
+
+
 	
