@@ -138,7 +138,7 @@ app.get('/get-music-data', async(req, res) => {
                 ON sa.song_id = s.song_id
             LEFT JOIN artist AS a
                 ON a.artist_id = sa.artist_id
-            WHERE ? < se.created_at
+            WHERE ? < se.created_at AND s.in_playlist = 1
             GROUP BY s.song_id, s.song_name
             ORDER BY num_times_played DESC
         ;`;
@@ -152,7 +152,7 @@ app.get('/get-music-data', async(req, res) => {
             FROM song AS s 
             JOIN song_event AS se
                 ON se.song_id = s.song_id
-            WHERE ? < se.created_at AND s.album IS NOT NULL
+            WHERE ? < se.created_at AND s.album IS NOT NULL AND s.in_playlist = 1
             GROUP BY s.album
             ORDER BY num_times_played DESC
         ;`;
@@ -168,7 +168,7 @@ app.get('/get-music-data', async(req, res) => {
                     ON sa.artist_id = a.artist_id
                 JOIN song_event AS se
                     ON se.song_id = sa.song_id
-                WHERE ? < se.created_at
+                WHERE ? < se.created_at AND s.in_playlist = 1
                 GROUP BY a.artist_name
                 ORDER BY num_times_played DESC
         `
