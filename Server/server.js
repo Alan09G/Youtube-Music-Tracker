@@ -195,22 +195,22 @@ app.get('/get-music-data', async(req, res) => {
 //endpoint to mark songs as removed from playlist
 app.post('/remove-from-playlist', async(req, res) => {
     try { 
-        const song_id = req.body.song_id
+        const songName = req.body.song_name
 
-        if (!song_id) {
+        if (!songName) {
             return res.status(400).send({
-                error: "song_id is required"
+                error: "song name is required"
             });
         }
-        
+
         let sql = `
             UPDATE song AS s
             SET in_playlist = 0
-            WHERE s.song_id = ?;
+            WHERE s.song_name = ?;
         `
 
         await new Promise((resolve, reject) => {
-            connection.query(sql, [song_id], (err, result) => {
+            connection.query(sql, [songName], (err, result) => {
                 if (err){
                     console.error("There was an error when removing song from playlist", err)
                     reject(err)
