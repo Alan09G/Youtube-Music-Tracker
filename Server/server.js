@@ -168,6 +168,8 @@ app.get('/get-music-data', async(req, res) => {
                     ON sa.artist_id = a.artist_id
                 JOIN song_event AS se
                     ON se.song_id = sa.song_id
+                JOIN song AS s
+                    ON s.song_id = sa.song_id
                 WHERE ? < se.created_at AND s.in_playlist = 1
                 GROUP BY a.artist_name
                 ORDER BY num_times_played DESC
