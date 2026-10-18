@@ -192,6 +192,48 @@ app.get('/get-music-data', async(req, res) => {
     }
 })
 
+//endpoint to mark songs as removed from playlist
+app.post('/remove-from-playlist', async(req, res) => {
+    try { 
+        const song_id = req.body.song_id
+
+        if (!song_id) {
+            return res.status(400).send({
+                error: "song_id is required"
+            });
+        }
+        
+        let sql = `
+            UPDATE song AS s
+            SET in_playlist = 0
+            WHERE s.song_id = ?;
+        `
+
+        await new Promise((resolve, reject) => {
+            connection.query(sql, [song_id], (err, result) => {
+                if (err){
+                    console.error("There was an error when removing song from playlist", err)
+                    reject(err)
+                } else { 
+                    resolve(result)
+                }
+            })
+        })
+
+        res.send({
+            message: 'Song in playlist status updated'
+        });
+
+    }catch(error) { 
+        console.error('Error trying to remove song from playlist:', error);
+        res.status(500).send('Error removing song from playlist');
+        return;        
+    }
+    res.send({
+        message: 'Song in playlist status updated'
+    });
+})
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
